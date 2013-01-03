@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstGeneticAlgorithm", "MyFirstGeneticAlgorithm\MyFirstGeneticAlgorithm.csproj", "{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{925062C4-823B-4E37-82C2-FADDB71DF260}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = MyFirstGeneticAlgorithm.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Debug|x86.ActiveCfg = Debug|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Debug|x86.Build.0 = Debug|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Release|Any CPU.ActiveCfg = Release|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Release|Mixed Platforms.Build.0 = Release|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Release|x86.ActiveCfg = Release|x86
+		{9A3A8E25-BFAC-4F6E-8DCD-78E402F74F74}.Release|x86.Build.0 = Release|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Debug|x86.ActiveCfg = Debug|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Debug|x86.Build.0 = Debug|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Release|Any CPU.ActiveCfg = Release|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Release|Mixed Platforms.Build.0 = Release|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Release|x86.ActiveCfg = Release|x86
+		{925062C4-823B-4E37-82C2-FADDB71DF260}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
