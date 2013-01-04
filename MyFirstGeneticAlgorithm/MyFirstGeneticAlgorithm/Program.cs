@@ -66,22 +66,21 @@ namespace MyFirstGeneticAlgorithm
                 while (newChromosomes.Count != amount)
                 {
                     //To generate new chromosomes i will select two mebers of the current group with the rulette wheel method
-                    //and then do crosover to get two new chromosomes. Then i'll mutate the new chromosomes and add them to the list.
+                    //and then do crosover between them. Then i'll mutate them and add them to the list.
 
                     //Select two chromosomes:
-
                     var sorted = (from s in currentChromosomes
 		                orderby FitnessScore(s, wantedValue)
 		                select s).ToList();
 
-                    string[] chromosome = new string[1];
+                    string[] selectedChromosomes = new string[1];
 
                     float upper = 0;
                     foreach (var chromo in sorted) upper += FitnessScore(chromo, wantedValue);
                     
-                    for (int i = 0; i <= upper; i++) //do this two times, once per chromosome
+                    for (int i = 0; i <= 1; i++) //do this two times, once per chromosome
                     {
-                        float rand = (float)random.NextDouble(); //where the "ball" lands
+                        float rand = (float)random.NextDouble() * upper; //where the "ball" lands
                         float value = 0;
                         
                         int chosenChromosome;
@@ -91,22 +90,86 @@ namespace MyFirstGeneticAlgorithm
                         }
                         chosenChromosome--;
 
-                        chromosome[i] = sorted[chosenChromosome];
+                        selectedChromosomes[i] = sorted[chosenChromosome];
                     }
 
                     //Do crosover:
-                    if (random.NextDouble() > crossoverRate)
+                    if (random.NextDouble() < crossoverRate)
                     {
                         int point = random.Next(0, chromosomeLenght);
 
+                        //the first chromosome is AB and the second is CD; A, B, C, D are parts of these chromosomes
+                        string A = selectedChromosomes[0].Substring(0, point);
+                        string B = selectedChromosomes[0].Substring(point);
+                        string C = selectedChromosomes[1].Substring(0, point);
+                        string D = selectedChromosomes[1].Substring(point);
+
+                        selectedChromosomes[0] = A + D;
+                        selectedChromosomes[1] = C + B;
                     }
+
+                    //Mutate the chromosomes:
+                    if ((decimal)random.NextDouble() < mutationRate)
+                    {
+                        for (int i = 0; i <= 1; i++) //do this two times, once per chromosome
+                        {
+                            selectedChromosomes[i].Replace('0', '1');
+                            selectedChromosomes[i].Replace('1', '0');
+                        }
+                    }
+
+                    //Add the selected chromosomes to the list of new chromosomes:
+                    for (int i = 0; i <= 1; i++) newChromosomes.Add(selectedChromosomes[i]);
                 }
             }
         }
 
         static float FitnessScore(string chromosome, int wantedValue)
         {
-            //First decode the chromosome:
+            int value = SolveChromosome(chromosome);
+
+            float score = 2;
+            try { score = 1f / Math.Abs(wantedValue - value); }
+            catch (DivideByZeroException) { Console.WriteLine("Houston, we have a winner!!!"); };
+
+            return score;
+        }
+
+        private static int SolveChromosome(string chromosome) //Calculate the value of the expression encoded in the chromosome
+        {
+            string premuted = DecodeChromosome(chromosome);
+
+            int value = 0;
+
+            for (int i = 1; i < premuted.Length; i += 2) //go through every second character (every digit)
+            {
+                int digit = int.Parse(premuted[i].ToString());
+                char operation = premuted[i - 1];
+
+                switch (operation)
+                {
+                    case '+':
+                        value += digit;
+                        break;
+                    case '-':
+                        value -= digit;
+                        break;
+                    case '*':
+                        value *= digit;
+                        break;
+                    case '/':
+                        try { value /= digit; } 
+                        catch (DivideByZeroException) { value = 0; }
+                        break;
+                }
+            }
+
+            return value;
+        }
+
+        private static string DecodeChromosome(string chromosome)
+        {
+            //Decode the chromosome:
             string decoded = "";
 
             for (int i = 0; i < chromosome.Length; i += 4)
@@ -144,37 +207,7 @@ namespace MyFirstGeneticAlgorithm
                 }
             }
 
-            //Calculate the value of the encoded expression
-            int value = 0;
-
-            for (int i = 1; i < premuted.Length; i += 2) //go through every second character (every digit)
-            {
-                int digit = int.Parse(premuted[i].ToString());
-                char operation = premuted[i - 1];
-
-                switch (operation)
-                {
-                    case '+':
-                        value += digit;
-                        break;
-                    case '-':
-                        value -= digit;
-                        break;
-                    case '*':
-                        value *= digit;
-                        break;
-                    case '/':
-                        value /= digit;
-                        break;
-                }
-            }
-
-            //And finally, calculate the fitness score:
-            float score = 0;
-            try { score = 1f / Math.Abs(wantedValue - value); }
-            catch (DivideByZeroException) { Console.WriteLine("Houston, we have a winner!!!"); };
-
-            return score;
+            return premuted;
         }
 
         static bool IsOperator(char character)
