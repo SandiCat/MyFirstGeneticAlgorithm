@@ -40,8 +40,9 @@ namespace MyFirstGeneticAlgorithm
 
             //Program specific values:
             List<string> currentChromosomes = new List<string>();
-            Random random = new Random(1337);
+            Random random = new Random(912313);
             const int wantedValue = 42;
+            string solution;
 
             //Generate [amount] chromosomoes and fill the list with them (actually its just generating random binary strings):
             for (int i = 0; i < amount; i++)
@@ -57,23 +58,34 @@ namespace MyFirstGeneticAlgorithm
             }
 
             //Evolve populations until a solution is found:
-            bool solutionFound = false;
-            while (!solutionFound)
+            int generation = 0;
+            while (0 != 1) //Spin it baby round round
             {
                 List<string> newChromosomes = new List<string>();
 
-                //Generate new chromosones by doing crossovers and mutations and add them to newChromosones:
-                while (newChromosomes.Count != amount)
+                //First calculate the fitness core for the current generation because we are going to need them a few times
+                Dictionary<string, float> fitnessScores = new Dictionary<string, float>();
+                foreach (var chromo in currentChromosomes)
                 {
+                    try { fitnessScores.Add(chromo, FitnessScore(chromo, wantedValue)); }
+                    catch (DivideByZeroException) { solution = chromo; goto End; }
+                    catch (ArgumentException) { }
+                }
+
+                //Sort the currentChrmosomes list because its needed for the rullete wheel selection
+                var sorted = (from s in currentChromosomes
+                              orderby fitnessScores[s]
+                              select s).ToList();
+
+                //Generate new chromosones by doing crossovers and mutations and add them to newChromosones:
+                int num = 0;
+                while (newChromosomes.Count != amount)
+                {                 
                     //To generate new chromosomes i will select two mebers of the current group with the rulette wheel method
                     //and then do crosover between them. Then i'll mutate them and add them to the list.
 
                     //Select two chromosomes:
-                    var sorted = (from s in currentChromosomes
-		                orderby FitnessScore(s, wantedValue)
-		                select s).ToList();
-
-                    string[] selectedChromosomes = new string[1];
+                    string[] selectedChromosomes = new string[]{null, null};
 
                     float upper = 0;
                     foreach (var chromo in sorted) upper += FitnessScore(chromo, wantedValue);
@@ -109,36 +121,52 @@ namespace MyFirstGeneticAlgorithm
                     }
 
                     //Mutate the chromosomes:
-                    if ((decimal)random.NextDouble() < mutationRate)
+                    for (int i = 0; i <= 1; i++) //do this two times, once per chromosome
                     {
-                        for (int i = 0; i <= 1; i++) //do this two times, once per chromosome
+                        string buffer = "";
+
+                        foreach (var character in selectedChromosomes[i])
                         {
-                            selectedChromosomes[i].Replace('0', '1');
-                            selectedChromosomes[i].Replace('1', '0');
+                            if ((decimal)random.NextDouble() <= mutationRate)
+                                buffer += character == '0' ? '1' : '0';
+                            else
+                                buffer += character;
                         }
+
+                        selectedChromosomes[i] = buffer;
                     }
 
                     //Add the selected chromosomes to the list of new chromosomes:
                     for (int i = 0; i <= 1; i++) newChromosomes.Add(selectedChromosomes[i]);
+
+                    num++;
+                    Console.Write(num.ToString() + " ");
                 }
+
+                //[amount] new chromosomes have been created and now they are the current population
+                currentChromosomes = new List<string>(newChromosomes);
+                newChromosomes.Clear();
+
+                generation++;
+                Console.WriteLine(": " + generation.ToString());
             }
+
+            End:
+            Console.WriteLine(DecodeChromosome(solution));
+            Console.WriteLine("Thats all folks!!!");
+            for (int i = 1; i < 5; i++)
+            {
+                Console.Beep(500 * i, 500);
+                System.Threading.Thread.Sleep(500);
+            }
+            Console.ReadKey(true);
         }
 
         static float FitnessScore(string chromosome, int wantedValue)
         {
-            int value = SolveChromosome(chromosome);
-
-            float score = 2;
-            try { score = 1f / Math.Abs(wantedValue - value); }
-            catch (DivideByZeroException) { Console.WriteLine("Houston, we have a winner!!!"); };
-
-            return score;
-        }
-
-        private static int SolveChromosome(string chromosome) //Calculate the value of the expression encoded in the chromosome
-        {
             string premuted = DecodeChromosome(chromosome);
 
+            //Calculate the value of the expression encoded in the chromosome:
             int value = 0;
 
             for (int i = 1; i < premuted.Length; i += 2) //go through every second character (every digit)
@@ -158,13 +186,19 @@ namespace MyFirstGeneticAlgorithm
                         value *= digit;
                         break;
                     case '/':
-                        try { value /= digit; } 
+                        try { value /= digit; }
                         catch (DivideByZeroException) { value = 0; }
                         break;
                 }
             }
 
-            return value;
+            //Calculate the fitness score:
+            float score = 0;       
+            score = 1f / Math.Abs(wantedValue - value);
+
+            if (score > 1) throw new DivideByZeroException();
+
+            return score;
         }
 
         private static string DecodeChromosome(string chromosome)
@@ -206,7 +240,6 @@ namespace MyFirstGeneticAlgorithm
                     }
                 }
             }
-
             return premuted;
         }
 
