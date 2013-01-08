@@ -35,13 +35,13 @@ namespace MyFirstGeneticAlgorithm
             //Constant varables (parameters):
             const float crossoverRate = 0.7f;
             const decimal mutationRate = 0.001M;
-            const int chromosomeLenght = 28;
+            const int chromosomeLenght = 40;
             const int amount = 50;
 
             //Program specific values:
             List<string> currentChromosomes = new List<string>();
-            Random random = new Random(912313);
-            const int wantedValue = 42;
+            Random random = new Random(1337);
+            const int wantedValue = 100;
             string solution;
 
             //Generate [amount] chromosomoes and fill the list with them (actually its just generating random binary strings):
@@ -76,6 +76,7 @@ namespace MyFirstGeneticAlgorithm
                 var sorted = (from s in currentChromosomes
                               orderby fitnessScores[s]
                               select s).ToList();
+                sorted.Reverse();
 
                 //Generate new chromosones by doing crossovers and mutations and add them to newChromosones:
                 int num = 0;
@@ -88,7 +89,7 @@ namespace MyFirstGeneticAlgorithm
                     string[] selectedChromosomes = new string[]{null, null};
 
                     float upper = 0;
-                    foreach (var chromo in sorted) upper += FitnessScore(chromo, wantedValue);
+                    foreach (var chromo in sorted) upper += fitnessScores[chromo];
                     
                     for (int i = 0; i <= 1; i++) //do this two times, once per chromosome
                     {
@@ -98,7 +99,7 @@ namespace MyFirstGeneticAlgorithm
                         int chosenChromosome;
                         for (chosenChromosome = 0; value < rand; chosenChromosome++)
                         {
-                            value += FitnessScore(sorted[chosenChromosome], wantedValue);
+                            value += fitnessScores[sorted[chosenChromosome]];
                         }
                         chosenChromosome--;
 
@@ -139,16 +140,16 @@ namespace MyFirstGeneticAlgorithm
                     //Add the selected chromosomes to the list of new chromosomes:
                     for (int i = 0; i <= 1; i++) newChromosomes.Add(selectedChromosomes[i]);
 
-                    num++;
-                    Console.Write(num.ToString() + " ");
+                    //num++;
+                    //Console.Write(num.ToString() + " ");
                 }
 
                 //[amount] new chromosomes have been created and now they are the current population
                 currentChromosomes = new List<string>(newChromosomes);
                 newChromosomes.Clear();
 
-                generation++;
-                Console.WriteLine(": " + generation.ToString());
+                //generation++;
+                //Console.WriteLine(": " + generation.ToString());
             }
 
             End:
@@ -215,6 +216,9 @@ namespace MyFirstGeneticAlgorithm
             }
 
             //Remove meaningless genes:
+            List<char> operators = new List<char> { '+', '-', '*', '/' };
+            Func<char, bool> IsOperator = (chr) => operators.Contains(chr) ? true : false;
+
             string premuted = "";
             if (!IsOperator(decoded[0])) { premuted += "+"; }
             premuted += decoded[0];
@@ -240,13 +244,10 @@ namespace MyFirstGeneticAlgorithm
                     }
                 }
             }
-            return premuted;
-        }
 
-        static bool IsOperator(char character)
-        {
-            List<char> operators = new List<char> { '+', '-', '*', '/' };
-            return operators.Contains(character) ? true : false;
+            Console.WriteLine(premuted);
+            
+            return premuted;
         }
     }
 }
